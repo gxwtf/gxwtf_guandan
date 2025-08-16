@@ -10,31 +10,11 @@ export default class Room {
         this.game = null; // 游戏开始后初始化Game实例
     }
 
-    // 新增观众
-    // 修改addSpectator方法
-    togglePlayerType(player) {
-        // console.log('add spectator',player.username);
-        if (player.type !== 'spectator') {
-            player.becomeSpectator();
-        }
-        this.players.set(player.id, player);
-    }
-
-    // 转换为玩家
-    promoteToPlayer(playerId, position) {
-        const player = this.players.get(playerId);
-        if (player && player.type === 'spectator') {
-            player.becomePlayer(position);
-            return true;
-        }
-        return false;
-    }
-
-    // 移除玩家
-    removePlayer(playerId) {
-        this.spectators.delete(playerId);
-        this.players.delete(playerId);
+    togglePlayerType(player, position) {
+        if (player.type == 'player') player.becomeSpectator();
+        else if(player.type == 'spectator') player.becomePlayer(position);
         this.updateOwner();
+        this.players.set(player.id, player);
     }
 
     // 更新房主
@@ -75,8 +55,6 @@ export default class Room {
         Array.from(this.players.values()).forEach(player => {
             if ([1, 3].includes(player.position)) player.team = 'A';
             if ([2, 4].includes(player.position)) player.team = 'B';
-            // 新增观众队伍处理
-            if (player.type === 'spectator') player.team = null;
         });
     }
 
@@ -89,7 +67,6 @@ export default class Room {
             readyCount: this.getReadyCount(),
             owner: this.owner,
             ownerPosition: this.ownerPosition,
-            spectators: Array.from(this.spectators),
             game: this.game?.serialize()
         };
     }
@@ -120,8 +97,6 @@ export default class Room {
         player.isReady = false;
         player.team = null;
 
-        // 自动转为观众
-        this.addSpectator(player);
-        this.updateOwner();
+        this.togglePlayerType(player,null);
     }
 }

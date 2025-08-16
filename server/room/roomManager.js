@@ -66,7 +66,7 @@ export default class RoomManager {
         const room = this.getRoom(roomId);
         if (room) {
             room.removePlayer(playerId);
-            room.spectators.delete(playerId);
+            this.updateRoomOwner(room);
             this.broadcastUpdate(roomId);
         }
     }
