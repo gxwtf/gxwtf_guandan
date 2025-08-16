@@ -1,9 +1,10 @@
+import Deck from './Deck.js'
 export default class GameState {
   constructor(players, settings) {
     this.players = players; // 玩家信息 {id: {username, position, team}}
     this.settings = settings;
     this.status = 'playing'; // playing, tribute, ended
-    this.deck = []; // 牌堆
+    this.deck = new Deck; // 牌堆
     this.playerHands = {}; // 玩家手牌 {playerId: [card1, card2...]}
     this.currentTurn = null; // 当前出牌玩家ID
     this.currentPlay = null; // 当前回合出的牌 {playerId, cards, type}
@@ -27,35 +28,6 @@ export default class GameState {
     this.currentTurn = playerIds[Math.floor(Math.random() * playerIds.length)];
   }
 
-  createDeck() {
-    // 创建标准牌+大小王（两副牌）
-    const suits = ['hearts', 'diamonds', 'clubs', 'spades'];
-    const ranks = ['2', '3', '4', '5', '6', '7', '8', '9', '10', 'J', 'Q', 'K', 'A'];
-    const deck = [];
-    
-    // 两副牌
-    for (let i = 0; i < 2; i++) {
-      suits.forEach(suit => {
-        ranks.forEach(rank => {
-          deck.push({ suit, rank });
-        });
-      });
-      
-      // 添加大小王
-      deck.push({ suit: 'joker', rank: 'BJ' }); // 小王
-      deck.push({ suit: 'joker', rank: 'RJ' }); // 大王
-    }
-    
-    return deck;
-  }
-
-  shuffleDeck(deck) {
-    // Fisher-Yates洗牌算法
-    for (let i = deck.length - 1; i > 0; i--) {
-      const j = Math.floor(Math.random() * (i + 1));
-      [deck[i], deck[j]] = [deck[j], deck[i]];
-    }
-  }
 
   dealCards() {
     const playerIds = Object.keys(this.players);

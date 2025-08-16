@@ -154,7 +154,7 @@ eval("__webpack_require__.r(__webpack_exports__);\n/* harmony export */ __webpac
 /*!***************************!*\
   !*** ./src/app/socket.js ***!
   \***************************/
-/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+/***/ ((__unused_webpack___webpack_module__, __webpack_exports__, __webpack_require__) => {
 
 "use strict";
 eval("__webpack_require__.r(__webpack_exports__);\n/* harmony export */ __webpack_require__.d(__webpack_exports__, {\n/* harmony export */   socket: () => (/* binding */ socket)\n/* harmony export */ });\n/* harmony import */ var socket_io_client__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! socket.io-client */ \"(ssr)/./node_modules/socket.io-client/build/esm-debug/index.js\");\n/* __next_internal_client_entry_do_not_use__ socket auto */ \nconst socket = (0,socket_io_client__WEBPACK_IMPORTED_MODULE_0__.io)();\n//# sourceURL=[module]\n//# sourceMappingURL=data:application/json;charset=utf-8;base64,eyJ2ZXJzaW9uIjozLCJmaWxlIjoiKHNzcikvLi9zcmMvYXBwL3NvY2tldC5qcyIsIm1hcHBpbmdzIjoiOzs7Ozs0REFFc0M7QUFFL0IsTUFBTUMsU0FBU0Qsb0RBQUVBLEdBQUciLCJzb3VyY2VzIjpbIi9Vc2Vycy9tYy/mlofku7YvZ3h3dGZfZ3VhbmRhbi9zcmMvYXBwL3NvY2tldC5qcyJdLCJzb3VyY2VzQ29udGVudCI6WyJcInVzZSBjbGllbnRcIjtcblxuaW1wb3J0IHsgaW8gfSBmcm9tIFwic29ja2V0LmlvLWNsaWVudFwiO1xuXG5leHBvcnQgY29uc3Qgc29ja2V0ID0gaW8oKTsiXSwibmFtZXMiOlsiaW8iLCJzb2NrZXQiXSwiaWdub3JlTGlzdCI6W10sInNvdXJjZVJvb3QiOiIifQ==\n//# sourceURL=webpack-internal:///(ssr)/./src/app/socket.js\n");
