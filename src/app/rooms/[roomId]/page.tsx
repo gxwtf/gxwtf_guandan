@@ -109,10 +109,10 @@ const GameRoom = () => {
   const currentPlayer = roomState.players[playerId];
   const isSeated = currentPlayer && currentPlayer.position !== null;
   const isReady = currentPlayer?.isReady || false;
-  const isOwner = currentPlayer?.isOwner || false;
+  const isOwner = currentPlayer?.isOwner;
 
   // 获取观众列表
-  const spectators = roomState.spectators.map(id => roomState.players[id]).filter(Boolean);
+  const spectators = roomState.spectators.map(id => roomState.players[id]).filter(p=>(p.type==='spectator'));
   
   // 获取座位玩家
   const seatedPlayers = Object.values(roomState.players).filter(

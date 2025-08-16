@@ -27,19 +27,15 @@ export default class Player {
         this.isReady = !this.isReady;
     }
 
-    // 保持原有房主计算逻辑
-    get isOwner() {
-        return this.position === this.ownerPosition;
-    }
-
-    serialize() {
+    serialize(owner) {
         return {
             id: this.id,
             username: this.username,
             position: this.position,
             isReady: this.isReady,
-            isOwner: this.position === this.ownerPosition,
-            team: this.team
+            isOwner: this.position===owner,
+            team: this.team,
+            type: this.type
         };
     }
 }

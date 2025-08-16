@@ -13,8 +13,13 @@ export default class Room {
     togglePlayerType(player, position) {
         if (player.type == 'player') player.becomeSpectator();
         else if(player.type == 'spectator') player.becomePlayer(position);
-        this.updateOwner();
         this.players.set(player.id, player);
+        this.updateOwner();
+    }
+
+    removePlayer(playerId) {
+        this.players.delete(playerId);
+        this.updateOwner();
     }
 
     // 更新房主
@@ -23,7 +28,7 @@ export default class Room {
             .filter(p => p.position !== null);
 
         // 改为存储房主位置
-        this.ownerPosition = seatedPlayers.length > 0
+        this.owner = seatedPlayers.length > 0
             ? seatedPlayers.reduce((min, p) => p.position < min.position ? p : min).position
             : null;
     }
@@ -61,12 +66,11 @@ export default class Room {
     serialize() {
         return {
             players: Object.fromEntries( // 转换为普通对象
-                Array.from(this.players.entries()).map(([id, p]) => [id, p.serialize()])
+                Array.from(this.players.entries()).map(([id, p]) => [id, p.serialize(this.owner)])
             ),
             settings: this.settings,
             readyCount: this.getReadyCount(),
             owner: this.owner,
-            ownerPosition: this.ownerPosition,
             game: this.game?.serialize()
         };
     }
@@ -82,7 +86,8 @@ export default class Room {
         }
 
         // 更新玩家状态
-        player.position = position;
+        if(player.type=='spectator') this.togglePlayerType(player,position);
+        else player.position = position;
         player.isReady = false;
         this.assignTeams();
         this.updateOwner();
