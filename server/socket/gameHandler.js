@@ -1,4 +1,4 @@
-import GameState from '../game/gameState.js';
+import GameState from '../game/Game.js';
 import { identifyCardType, compareCardTypes, CardTypes } from '../utils/cardUtils.js';
 
 export default (socket, io, rooms) => {
