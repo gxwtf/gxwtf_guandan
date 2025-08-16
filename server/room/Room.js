@@ -1,9 +1,7 @@
 import GameSettings from '../game/GameSettings.js';
 
 export default class Room {
-    // 需要添加spectators属性
     constructor() {
-        this.spectators = new Set();
         this.players = new Map(); // <playerId, Player>
         this.settings = new GameSettings();
         this.status = 'waiting';
@@ -14,9 +12,8 @@ export default class Room {
 
     // 新增观众
     // 修改addSpectator方法
-    addSpectator(player) {
-        console.log('add spectator',player.username);
-        this.spectators.add(player.id);
+    togglePlayerType(player) {
+        // console.log('add spectator',player.username);
         if (player.type !== 'spectator') {
             player.becomeSpectator();
         }
@@ -35,6 +32,7 @@ export default class Room {
 
     // 移除玩家
     removePlayer(playerId) {
+        this.spectators.delete(playerId);
         this.players.delete(playerId);
         this.updateOwner();
     }
@@ -84,8 +82,9 @@ export default class Room {
 
     serialize() {
         return {
-            roomId: this.id,
-            players: Array.from(this.players.values()).map(p => p.serialize()),
+            players: Object.fromEntries( // 转换为普通对象
+                Array.from(this.players.entries()).map(([id, p]) => [id, p.serialize()])
+            ),
             settings: this.settings,
             readyCount: this.getReadyCount(),
             owner: this.owner,

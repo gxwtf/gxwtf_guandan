@@ -75,6 +75,7 @@ const GameRoom = () => {
       setRoomState(prev => ({
         ...prev,
         ...data,
+        players: {...prev.players,...data.players},
         readyCount: Object.values(data.players)
           .filter(player => player.isReady && player.position !== null)
           .length
@@ -141,6 +142,7 @@ const GameRoom = () => {
     router.push('/');
   };
 
+  // console.log(roomState);
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-900 to-slate-800 text-white p-4">
       <div className="max-w-4xl mx-auto">

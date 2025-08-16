@@ -9,6 +9,7 @@ const SpectatorsList: React.FC<SpectatorsListProps> = ({
   spectators, 
   currentPlayerId 
 }) => {
+  // console.log(spectators,currentPlayerId);
   if (spectators.length === 0) return null;
   
   return (

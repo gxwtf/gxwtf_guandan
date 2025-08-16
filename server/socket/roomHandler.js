@@ -9,14 +9,14 @@ export default (socket, io) => {
 		if (typeof roomId !== 'string' || roomId.length > 20) {
 			return socket.emit('error', '房间ID无效');
 		}
+
+		socket.join(roomId);
 		
 		const room = roomManager.enterRoom(roomId);
 		const player = new Player(socket.id, username, 'spectator');
 
 		room.addSpectator(player);
 		roomManager.broadcastUpdate(roomId);
-
-		socket.join(roomId);
 
 		// 在disconnect
 		socket.on('disconnect', () => {
