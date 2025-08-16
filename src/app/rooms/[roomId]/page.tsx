@@ -17,6 +17,7 @@ interface Player {
   isReady: boolean;
   isOwner: boolean;
   team: string | null;
+  type?: string;
 }
 
 interface RoomState {
@@ -72,10 +73,14 @@ const GameRoom = () => {
 
     // 监听房间更新
     socket.on('roomUpdate', (data: RoomState) => {
+      const newSpectators = Object.entries(data.players)
+        .filter(([_, player]) => player.type === 'spectator')
+        .map(([id, _]) => id);
       setRoomState(prev => ({
         ...prev,
         ...data,
         players: {...prev.players,...data.players},
+        spectators: newSpectators,
         readyCount: Object.values(data.players)
           .filter(player => player.isReady && player.position !== null)
           .length

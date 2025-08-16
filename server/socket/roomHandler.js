@@ -15,7 +15,8 @@ export default (socket, io) => {
 		const room = roomManager.enterRoom(roomId);
 		const player = new Player(socket.id, username, 'spectator');
 
-		room.addSpectator(player);
+		room.players.set(socket.id, player);
+		
 		roomManager.broadcastUpdate(roomId);
 
 		// 在disconnect
