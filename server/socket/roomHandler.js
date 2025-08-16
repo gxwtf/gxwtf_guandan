@@ -50,15 +50,15 @@ export default (socket, io) => {
 			roomManager.broadcastUpdate(roomId);
 		});
 
+		// 修复条件判断逻辑
 		socket.on('updateSettings', (newSettings) => {
-			const player = room.getPlayer(socket.id);
-			if (player?.isOwner) {
-				return socket.emit('error', '无权限修改设置');
-			}
-			if (socket.id === room.ownerId) {
-				room.updateSettings(newSettings);
-				roomManager.broadcastUpdate(roomId);
-			}
+		    const player = room.getPlayer(socket.id);
+		    // 修正权限判断：只有房主可以修改设置
+		    if (player?.position !== room.owner) {
+		        return socket.emit('error', '无权限修改设置');
+		    }
+		    room.updateSettings(newSettings);
+		    roomManager.broadcastUpdate(roomId);
 		});
 
 		socket.on('startGame', () => {

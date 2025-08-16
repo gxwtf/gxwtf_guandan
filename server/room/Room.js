@@ -10,9 +10,13 @@ export default class Room {
         this.game = null; // 游戏开始后初始化Game实例
     }
 
+    getPlayer(playerId) {
+        return this.players.get(playerId);
+    }
+
     togglePlayerType(player, position) {
         if (player.type == 'player') player.becomeSpectator();
-        else if(player.type == 'spectator') player.becomePlayer(position);
+        else if (player.type == 'spectator') player.becomePlayer(position);
         this.players.set(player.id, player);
         this.updateOwner();
     }
@@ -48,7 +52,7 @@ export default class Room {
     }
 
     updateSettings(newSettings) {
-        Object.assign(this.settings, newSettings);
+        this.settings = { ...this.settings, ...newSettings };
     }
 
     getReadyCount() {
@@ -86,7 +90,7 @@ export default class Room {
         }
 
         // 更新玩家状态
-        if(player.type=='spectator') this.togglePlayerType(player,position);
+        if (player.type == 'spectator') this.togglePlayerType(player, position);
         else player.position = position;
         player.isReady = false;
         this.assignTeams();
@@ -102,6 +106,6 @@ export default class Room {
         player.isReady = false;
         player.team = null;
 
-        this.togglePlayerType(player,null);
+        this.togglePlayerType(player, null);
     }
 }
