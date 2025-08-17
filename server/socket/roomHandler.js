@@ -1,72 +1,75 @@
-import RoomManager from '../room/roomManager.js';
 import Player from '../player/Player.js';
+import Room from '../room/Room.js';
 
-export default (socket, io) => {
+export default (socket, io, rooms) => {
 
-    const roomManager = RoomManager.instance || new RoomManager(io);
-	socket.on('joinRoom', ({ roomId, username = `用户${Math.random().toString(36).substring(2, 7)}` }) => {
-		// 验证房间ID格式
+	const broadcastUpdate = (roomId) => {
+		const room = rooms.get(roomId);
+		io.to(roomId).emit('roomUpdate', room?.serialize());
+	};
+
+	const enterRoom = (roomId) => {
+		if (!rooms.has(roomId)) {
+			rooms.set(roomId, new Room(roomId));
+		}
+		return rooms.get(roomId);
+	};
+
+	socket.on('joinRoom', ({ roomId, username }) => {
+		// 验证房间ID
 		if (typeof roomId !== 'string' || roomId.length > 20) {
 			return socket.emit('error', '房间ID无效');
 		}
 
 		socket.join(roomId);
-		
-		const room = roomManager.enterRoom(roomId);
+		const room = enterRoom(roomId);
 		const player = new Player(socket.id, username, 'spectator');
 
 		room.players.set(socket.id, player);
-		
-		roomManager.broadcastUpdate(roomId);
+		broadcastUpdate(roomId);
 
-		// 在disconnect
+		// 断开连接处理
 		socket.on('disconnect', () => {
-			roomManager.removePlayerFromRoom(roomId, socket.id);
-			if (player.position !== null) {
-				roomManager.updateRoomOwner(room);
-			}
-			roomManager.broadcastUpdate(roomId);
+			room.removePlayer(socket.id);
+			broadcastUpdate(roomId);
 		});
 
-		socket.on('takeSeat', ({ position }) => {
+		socket.on('seatChange', ({ newPosition }) => {
 			try {
-				const room = roomManager.getRoom(roomId);
-				room.handleTakeSeat(socket.id, position);
-				roomManager.broadcastUpdate(roomId);
+				const room = rooms.get(roomId);
+
+				if (newPosition === null) { // 离座操作
+					room.handleSeatChange(socket.id, null);
+				} else if (typeof newPosition === 'number') { // 占座/换座
+					room.handleSeatChange(socket.id, newPosition);
+				}
+
+				broadcastUpdate(roomId);
 			} catch (error) {
 				socket.emit('error', error.message);
 			}
 		});
 
-		socket.on('leaveSeat', () => {
-			const room = roomManager.getRoom(roomId);
-			room.handleLeaveSeat(socket.id);
-			roomManager.broadcastUpdate(roomId);
-		});
-
 		socket.on('toggleReady', () => {
-			const player = room.getPlayer(socket.id);
-			player.toggleReady();
-			roomManager.broadcastUpdate(roomId);
+			const player = room.players.get(socket.id);
+			player?.toggleReady();
+			broadcastUpdate(roomId);
 		});
 
-		// 修复条件判断逻辑
 		socket.on('updateSettings', (newSettings) => {
-		    const player = room.getPlayer(socket.id);
-		    // 修正权限判断：只有房主可以修改设置
-		    if (player?.position !== room.owner) {
-		        return socket.emit('error', '无权限修改设置');
-		    }
-		    room.updateSettings(newSettings);
-		    roomManager.broadcastUpdate(roomId);
+			const player = room.players.get(socket.id);
+			if (player?.position !== room.owner) {
+				return socket.emit('error', '无权限修改设置');
+			}
+			room.updateSettings(newSettings);
+			broadcastUpdate(roomId);
 		});
 
 		socket.on('startGame', () => {
 			try {
-				const room = roomManager.getRoom(roomId);
 				room.startGame();
-				roomManager.broadcastUpdate(io, roomId);
 				io.to(roomId).emit('gameStarted', room.serialize());
+				broadcastUpdate(roomId);
 			} catch (error) {
 				socket.emit('error', error.message);
 			}

@@ -10,7 +10,7 @@ export default class Player {
     constructor(id, username, type = 'spectator') {
         this.id = id;
         this.username = username;
-        this.type = type; // player/spectator
+        this.type = type;
         this.position = null;
         this.isReady = false;
         this.joinTime = Date.now();
@@ -22,6 +22,7 @@ export default class Player {
         this.type = 'spectator';
         this.position = null;
         this.isReady = false;
+        this.team = null;
     }
 
     // 转换为玩家

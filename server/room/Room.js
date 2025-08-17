@@ -18,10 +18,6 @@ export default class Room {
         this.game = null;
     }
 
-    getPlayer(playerId) {
-        return this.players.get(playerId);
-    }
-
     togglePlayerType(player, position) {
         if (player.type == 'player') player.becomeSpectator();
         else if (player.type == 'spectator') player.becomePlayer(position);
@@ -43,20 +39,6 @@ export default class Room {
         this.owner = seatedPlayers.length > 0
             ? seatedPlayers.reduce((min, p) => p.position < min.position ? p : min).position
             : null;
-    }
-
-    startGame() {
-        if (!this.owner) throw new Error('房主不存在');
-
-        const seatedPlayers = Array.from(this.players.values())
-            .filter(p => p.position !== null);
-
-        if (seatedPlayers.length !== 4 || !seatedPlayers.every(p => p.isReady)) {
-            throw new Error('需要4位玩家全部准备');
-        }
-
-        this.status = 'playing';
-        this.game = new Game(this);
     }
 
     updateSettings(newSettings) {
@@ -88,33 +70,49 @@ export default class Room {
         };
     }
 
-    handleTakeSeat(playerId, position) {
+    handleSeatChange(playerId, newPosition) {
         const player = this.players.get(playerId);
-        if (!player || ![1, 2, 3, 4].includes(position))
-            throw new Error('INVALID_POSITION');
 
-        // 校验座位冲突
-        if (Array.from(this.players.values()).some(p => p.position === position)) {
+        // 离座处理
+        if (newPosition === null) {
+            if (!player?.position) return;
+            this.togglePlayerType(player, null);
+            this.updateOwner();
+            this.assignTeams();
+            return;
+        }
+
+        // 座位有效性验证
+        if (![1, 2, 3, 4].includes(newPosition)) {
+            throw new Error('INVALID_POSITION');
+        }
+
+        // 检查座位冲突
+        if (Array.from(this.players.values()).some(p => p.position === newPosition)) {
             throw new Error('SEAT_OCCUPIED');
         }
 
-        // 更新玩家状态
-        if (player.type == 'spectator') this.togglePlayerType(player, position);
-        else player.position = position;
+        // 新玩家入座
+        if (player.type === 'spectator') this.togglePlayerType(player, newPosition);
+
+        // 更新座位位置
+        player.position = newPosition;
         player.isReady = false;
         this.assignTeams();
         this.updateOwner();
     }
 
-    handleLeaveSeat(playerId) {
-        const player = this.players.get(playerId);
-        if (!player || !player.position) return;
+    startGame() {
+        if (!this.owner) throw new Error('房主不存在');
 
-        // 清除座位状态
-        player.position = null;
-        player.isReady = false;
-        player.team = null;
+        const seatedPlayers = Array.from(this.players.values())
+            .filter(p => p.position !== null);
 
-        this.togglePlayerType(player, null);
+        if (seatedPlayers.length !== 4 || !seatedPlayers.every(p => p.isReady)) {
+            throw new Error('需要4位玩家全部准备');
+        }
+
+        this.status = 'playing';
+        this.game = new Game(this);
     }
 }
