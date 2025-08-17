@@ -27,9 +27,7 @@ export default class RoomManager {
     }
 
     enterRoom(roomId) {
-        console.log('Enter Room', roomId);
         if (!this.rooms.has(roomId)) {
-            console.log('Create New Room');
             const newRoom = new Room(roomId);
             newRoom.settings = new GameSettings();
             this.rooms.set(roomId, newRoom);

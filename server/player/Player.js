@@ -1,3 +1,11 @@
+/**
+ * 玩家实体类
+ * @property {string} id - 玩家唯一标识（socket.id）
+ * @property {string} username - 显示名称
+ * @property {'player'|'spectator'} type - 玩家类型
+ * @property {number|null} position - 座位位置（1-4）
+ */
+
 export default class Player {
     constructor(id, username, type = 'spectator') {
         this.id = id;

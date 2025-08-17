@@ -1,13 +1,21 @@
+/**
+ * 游戏房间类，管理房间状态和玩家操作
+ * @property {Map} players - 房间内玩家集合（键：playerId，值：Player）
+ * @property {GameSettings} settings - 游戏设置
+ * @property {string} status - 房间状态
+ * @property {number|null} owner - 房主座位位置
+ * @property {Game|null} game - 游戏实例
+ */
+
 import GameSettings from '../game/GameSettings.js';
 
 export default class Room {
     constructor() {
-        this.players = new Map(); // <playerId, Player>
+        this.players = new Map();
         this.settings = new GameSettings();
-        this.status = 'waiting';
         this.owner = null;
         this.status = 'waiting';
-        this.game = null; // 游戏开始后初始化Game实例
+        this.game = null;
     }
 
     getPlayer(playerId) {
@@ -64,6 +72,7 @@ export default class Room {
         Array.from(this.players.values()).forEach(player => {
             if ([1, 3].includes(player.position)) player.team = 'A';
             if ([2, 4].includes(player.position)) player.team = 'B';
+            else player.team = null;
         });
     }
 
