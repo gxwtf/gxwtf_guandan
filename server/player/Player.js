@@ -15,6 +15,12 @@ export default class Player {
         this.isReady = false;
         this.joinTime = Date.now();
         this.team = null;
+        this.gameState = {
+            hand: [],
+            score: 0,
+            finishedOrder: null,
+            isBanker: false
+        }
     }
 
     // 转换为观众
@@ -42,7 +48,7 @@ export default class Player {
             username: this.username,
             position: this.position,
             isReady: this.isReady,
-            isOwner: this.position===owner,
+            isOwner: this.position === owner,
             team: this.team,
             type: this.type
         };

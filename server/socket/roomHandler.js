@@ -67,8 +67,13 @@ export default (socket, io, rooms) => {
 
 		socket.on('startGame', () => {
 			try {
-				room.startGame();
-				io.to(roomId).emit('gameStarted', room.serialize());
+				// 在toggleReady事件处理中添加
+				const readyPlayers = Object.values(room.players).filter(p => p.isReady);
+				if (readyPlayers.length === 4) {
+				  io.to(roomId).emit('gameStarted');
+				  // 触发游戏初始化逻辑
+				  room.startGame(); 
+				}
 				broadcastUpdate(roomId);
 			} catch (error) {
 				socket.emit('error', error.message);

@@ -104,15 +104,8 @@ export default class Room {
 
     startGame() {
         if (!this.owner) throw new Error('房主不存在');
-
-        const seatedPlayers = Array.from(this.players.values())
-            .filter(p => p.position !== null);
-
-        if (seatedPlayers.length !== 4 || !seatedPlayers.every(p => p.isReady)) {
-            throw new Error('需要4位玩家全部准备');
-        }
-
         this.status = 'playing';
-        this.game = new Game(this);
+        this.game = new Game(this, this.settings);
+        this.game.initialize();
     }
 }
